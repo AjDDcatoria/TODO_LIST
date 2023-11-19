@@ -156,7 +156,7 @@ class Options:
         # TODO: Code to remove the task from the database 🔨
 
         """ #? IDEA for building this function
-            You can use display_task() function to display the task
+            You can use get_all_task() function to display the task
             and delete by user input
             You can decide on the specific implementation details.
         """
@@ -192,7 +192,7 @@ class Options:
             0 = False == TODO
             1 = True == DONE
 
-            You can use the display_task() function to display the task
+            You can use the get_all_task() function to display the task
             and then ask the user for input on which task they want to mark.
             You can decide on the specific implementation details.
         """
