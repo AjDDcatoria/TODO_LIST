@@ -112,7 +112,7 @@ class Options:
         Fetching all data from database and 
         insert to 2D array
 
-        this is how to retrive data from 2d array
+        retrive data from 2d array?
 
         example: # Database table
 
