@@ -10,8 +10,20 @@ from option import (
     display_task,
     mark_task,
     update_task,
-    default
+    default,
 )
+
+class TextColor:
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    MAGENTA = '\033[35m'
+    RESET = '\033[0m'
+
+class TextStyle:
+    BOLD = '\033[1m'
+    RESET = '\033[0m'
+
 
 def get_battery_percentage():
     """
@@ -106,13 +118,20 @@ def print_menu():
     """
     clear_screen()
     print_header()
-    print("\n========= TODO LIST =========\n")
-    print("    1.Add task")
-    print("    2.Remove task")
-    print("    3.Display task")
-    print("    4.Mark tasks as done")
-    print("    5.Update task details ")
-    print("    6.Exit ")
+    print(
+        "\n============ " +
+        TextStyle.BOLD +
+        TextColor.MAGENTA + "TODO LIST" +
+        TextColor.RESET + 
+        TextStyle.RESET +
+        " ============\n"
+        )
+    print(TextColor.YELLOW , "  1" + TextColor.RESET + ".Add task")
+    print(TextColor.YELLOW , "  2" + TextColor.RESET +".Remove task")
+    print(TextColor.YELLOW , "  3" + TextColor.RESET + ".Display task")
+    print(TextColor.YELLOW , "  4" + TextColor.RESET + ".Mark tasks as done")
+    print(TextColor.YELLOW , "  5" + TextColor.RESET + ".Update task details ")
+    print(TextColor.YELLOW , "  6" + TextColor.RESET + ".Exit ")
 
 
 def main():
@@ -136,6 +155,7 @@ def main():
             "5": update_task
         }
         clear_lines(8)
+
         if choice == "6":  # if the user enters number 6, stop the program
             clear_screen()
             exit_flag = True
@@ -144,7 +164,6 @@ def main():
             update_text(options)
             time.sleep(2)
             clear_screen()
-
 
 if __name__ == "__main__":
     main()
