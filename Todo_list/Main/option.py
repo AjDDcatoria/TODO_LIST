@@ -107,6 +107,51 @@ class Options:
         except mysql.connector.Error as err:
             return f"Error adding task: {err}"
 
+    def get_all_tasks(self):
+        """
+        Fetching all data from database and 
+        insert to 2D array
+
+        this is how to retrive data from 2d array
+
+        example: # Database table
+
+           ==================================================
+             title    |  description |  deadlines   |  mark
+           ==================================================
+            title#1   |    des#1     |  2023-11-20  |   1
+            title#2   |    des#2     |  2023-12-20  |   0
+            title#3   |    des#3     |  2023-13-20  |   1
+            title#4   |    des#4     |  2023-14-20  |   0
+            title#5   |    des#5     |  2023-15-20  |   1
+                 
+            
+                  R  C               C = column  R = row
+        task_list[1][5] == des#5     // description
+        task_list[0][1] == title#1   // title
+        task_list[3][0] == 1         // mark
+
+        Author : AJ R. Dedicatoria
+        Code created : 11-19-2023
+        """
+
+        cursor = self.connector.con.cursor()
+
+        try:
+            sql = 'SELECT * FROM todo_test'
+            cursor.execute(sql)
+
+            result = cursor.fetchall()
+
+            task_list = [list(row) for row in zip(*result)]
+
+            return task_list
+
+        except mysql.connector.Error as err:
+            print(f"Error fetching tasks:{err}")
+        finally:
+            cursor.close()
+
     def remove_task(self):
         # TODO: Code to remove the task from the database 🔨
 
@@ -129,11 +174,13 @@ class Options:
 
             Display the task as follows:
 
-            ============ TODO LIST ============ 
+            ============== TODO LIST ==============
+                 Title       Mark       Day left
+            =======================================
 
-                1. Assignment#1 (TODO) 2 days left
-                2. Assignment#2 (TODO) 5 days left
-                3. Activity#1 (DONE) 9 days left
+            1.Assignment#1   (Todo)   2 days left
+            2.Assignment#2   (Todo)   5 days left
+            3.Activity#1     (Done)   9 days left
         """
         return 'displayTask'
 
@@ -177,20 +224,3 @@ class Options:
     def default(self):
         return 'Not in the options. Please try again!'
 
-    def get_all_tasks(self):
-        cursor = self.connector.con.cursor()
-
-        try:
-            sql = 'SELECT * FROM todo_test'
-            cursor.execute(sql)
-
-            result = cursor.fetchall()
-
-            task_list = [list(row) for row in zip(*result)]
-
-            return task_list
-
-        except mysql.connector.Error as err:
-            print(f"Error fetching tasks:{err}")
-        finally:
-            cursor.close()
