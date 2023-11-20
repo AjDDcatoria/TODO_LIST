@@ -6,10 +6,15 @@
 
     data base we used mysql (XAMPP)
 """
+import os
 import mysql.connector
 from datetime import datetime
+from deadline import DeadlineTracker
 
 current_date = datetime.now().date()
+def clear_screen():
+    # Clear the Console
+    os.system("cls" if os.name == "nt" else "clear")
 
 class Connector: # DataBase Connector translated from java
     def __init__(self):
@@ -27,6 +32,7 @@ class Connector: # DataBase Connector translated from java
             print("Connected to the database!")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
+
 
 class Options:
     def __init__(self):
@@ -49,7 +55,7 @@ class Options:
         cursor = self.connector.con.cursor()
 
         # Execute SQL query to add a task
-        sql = "INSERT INTO todo_test (`title`, `description`, `deadlines`, `mark`) VALUES (%s, %s, %s, %s)"
+        sql = "INSERT INTO todo_test2 (`title`, `description`, `deadline`, `mark`) VALUES (%s, %s, %s, %s)"
         values = (task_name, description, deadline_str, False)
 
         try:
@@ -77,14 +83,14 @@ class Options:
         Code created: 11-18-2023 to 11-19-2023 📅
         """
 
-        print('\t - Add Tasks -\n')
-        task_name = input('Enter Title       : ')
-        description = input('Enter Description : ')
-        deadline_str = input('Enter Deadline MM-DD-YY: ')
+        print('\t       - Add Tasks -\n')
+        task_name = input('   Enter Title       : ')
+        description = input('   Enter Description : ')
+        deadline_str = input('   Enter Deadline MM-DD-YY: ')
 
         # Check if the inputs are empty
         if not task_name or not description or not deadline_str:
-            return 'Please input all the requirements'
+            return '\n   Please input all the requirements'
 
         try:
             parsed_date = datetime.strptime(deadline_str, "%m-%d-%Y")
@@ -97,9 +103,9 @@ class Options:
                     return '\tTask not added. Deadline is past.'
                 else:
   
-                  return  self.insert_task(task_name,description,parsed_date)
+                  return  self.insert_task(task_name,description,deadline_str)
 
-            return self.insert_task(task_name,description,parsed_date)
+            return self.insert_task(task_name,description,deadline_str)
 
         except ValueError:
             return 'Invalid date format. Please use MM-DD-YY.'
@@ -119,17 +125,14 @@ class Options:
            ==================================================
              title    |  description |  deadlines   |  mark
            ==================================================
-            title#1   |    des#1     |  2023-11-20  |   1
-            title#2   |    des#2     |  2023-12-20  |   0
-            title#3   |    des#3     |  2023-13-20  |   1
-            title#4   |    des#4     |  2023-14-20  |   0
-            title#5   |    des#5     |  2023-15-20  |   1
-                 
+           DSA Project| Final project|  12-13-2023  |   1
+           Assignment1| Math         |  11-28-2023  |   0
+           Activity 1 | PE           |  11-15-2023  |   1
             
-                  R  C               C = column  R = row
-        task_list[1][5] == des#5     // description
-        task_list[0][1] == title#1   // title
-        task_list[3][0] == 1         // mark
+                  R  C                  C = column  R = row
+        task_list[1][1] == Math         // description
+        task_list[0][1] == Assignment   // title
+        task_list[3][0] == 1            // mark
 
         Author : AJ R. Dedicatoria
         Code created : 11-19-2023
@@ -138,12 +141,12 @@ class Options:
         cursor = self.connector.con.cursor()
 
         try:
-            sql = 'SELECT * FROM todo_test'
+            sql = 'SELECT * FROM todo_test2'
             cursor.execute(sql)
 
             result = cursor.fetchall()
 
-            task_list = [list(row) for row in zip(*result)]
+            task_list = [list(row) for row in result]
 
             return task_list
 
@@ -164,25 +167,39 @@ class Options:
         return '\t  Task Remove ✔️'
 
     def display_task(self):
-        # TODO: Code to display the task from the database 🔨
-
-        """ #? IDEA for building this function
-            The deadline value in the database is in the format ex. 2023-11-20
-            Before displaying the task, calculate how many
-            days remaining before the deadlines. Sort them
-            by the remaining days ex. below
-
-            Display the task as follows:
-
-            ============== TODO LIST ==============
-                 Title       Mark       Day left
-            =======================================
-
-            1.Assignment#1   (Todo)   2 days left
-            2.Assignment#2   (Todo)   5 days left
-            3.Activity#1     (Done)   9 days left
         """
-        return 'displayTask'
+        Fetches all tasks from the database, calculates the number of days remaining before the deadlines,
+        sorts the tasks by the remaining days, and displays them in a formatted manner.
+
+        Author : Aj R. Dedicatoria
+        Code Created : 11-20-2023
+        """
+        task = self.get_all_tasks()
+        track = DeadlineTracker(task)
+        track.sort_by_days_left()
+        sorted_task = track.get_task()
+
+        go_back = False
+        while not go_back:
+            print('{:<17} {:<10} {:<20}'.format('   Title', ' Mark', 'Days left'))
+            print('='*42)
+
+            for count, task in enumerate(sorted_task, start=1):
+                title_text = task[0]
+                mark_value = task[3]
+                day_value = task[2]
+
+                mark_text = "(Todo)" if mark_value == 0 else "(Done)"
+                day_text = "Outdated" if day_value < 0 else f"{day_value} days left"
+
+                print(f"{count}.{title_text:<15} {mark_text:<9} {day_text:<20}")
+
+            choice = input("\nEnter 'back' if you want to go back: ")
+            if choice.upper() == 'BACK':
+                go_back = True
+                clear_screen()
+
+        return '\n\n\t Back to the main Menu'
 
     def mark_task(self):
         # TODO: Code to mark the task from the database / edit 🔨
@@ -223,4 +240,8 @@ class Options:
 
     def default(self):
         return 'Not in the options. Please try again!'
+
+
+
+
 
