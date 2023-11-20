@@ -54,7 +54,7 @@ class Main:
         # Print the date and battery status
         if battery_percent is not None:
             status_icon = self.get_battery_status_icon(battery_percent)
-            print(f"{current_time}\t\t  📶 {status_icon}")
+            print(f"{current_time}\t\t\t  📶 {status_icon}")
 
 
     def get_battery_status_icon(self,battery_percent):
@@ -113,16 +113,15 @@ class Main:
         """
         self.clear_screen()
         self.print_header()
-        print(
-            "\n============ " +
+        print('='*14,
             TextStyle.BOLD +
-            TextColor.MAGENTA + "TODO LIST" +
+            TextColor.MAGENTA + "  TODO LIST  " +
             TextColor.RESET + 
             TextStyle.RESET +
-            " ============\n"
+            "="*14
             )
-        print(TextColor.YELLOW , "  1" + TextColor.RESET + ".Add task")
-        print(TextColor.YELLOW , "  2" + TextColor.RESET +".Remove task")
+        print("\n"+TextColor.YELLOW , "  1" + TextColor.RESET + ".Add task")
+        print(TextColor.YELLOW , "  2" + TextColor.RESET + ".Remove task")
         print(TextColor.YELLOW , "  3" + TextColor.RESET + ".Display task")
         print(TextColor.YELLOW , "  4" + TextColor.RESET + ".Mark tasks as done")
         print(TextColor.YELLOW , "  5" + TextColor.RESET + ".Update task details ")
@@ -142,7 +141,7 @@ class Main:
                 "4": options.mark_task,
                 "5": options.update_task
             }
-            self.clear_lines(8)
+            self.clear_lines(9)
 
             if choice == "6":
                 self.clear_screen()
