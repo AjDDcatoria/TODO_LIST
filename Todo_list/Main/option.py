@@ -6,15 +6,15 @@
 
     data base we used mysql (XAMPP)
 """
-import os
 import mysql.connector
+import time
 from datetime import datetime
+
 from deadline import DeadlineTracker
+from ui import Main,Display
+
 
 current_date = datetime.now().date()
-def clear_screen():
-    # Clear the Console
-    os.system("cls" if os.name == "nt" else "clear")
 
 class Connector: # DataBase Connector translated from java
     def __init__(self):
@@ -49,7 +49,7 @@ class Options:
         :return: Message indicating the success or failure of the operation
 
         Author : Aj R. Dedicatoria ☠️
-        Code created : 11-18-2023 📅
+        Coded : 11-18-2023 📅
 
         """
         cursor = self.connector.con.cursor()
@@ -63,7 +63,7 @@ class Options:
             # Commit the changes to the database
             self.connector.con.commit()
 
-            return '\n\t  Task Added ✔️'
+            return '\n\t\tTask Added ✔️'
 
         except mysql.connector.Error as err:
             return f"Error adding task: {err}"
@@ -80,7 +80,7 @@ class Options:
         then insert the value into the database.
 
         Author: AJ R. Dedicatoria ☠️
-        Code created: 11-18-2023 to 11-19-2023 📅
+        Coded: 11-18-2023 to 11-19-2023 📅
         """
 
         print('\t       - Add Tasks -\n')
@@ -135,7 +135,7 @@ class Options:
         task_list[3][0] == 1            // mark
 
         Author : AJ R. Dedicatoria
-        Code created : 11-19-2023
+        Coded : 11-19-2023
         """
 
         cursor = self.connector.con.cursor()
@@ -164,43 +164,92 @@ class Options:
             You can decide on the specific implementation details.
         """
         print('\t- Remove Tasks -\n')
-        return '\t  Task Remove ✔️'
+        return '\tTask Remove ✔️'
+
+
+    def display_filtered_tasks(self, tasks, filter=None):
+        """
+        Displays tasks based on the specified filter.
+
+        Args:
+            tasks (list): List of tasks to display.
+            filter (str): Filter option, either 'showTodo' or 'showDone'. Defaults to None.
+
+        Author : AJ R. Dedicatoria
+        Coded: 11-23-2023
+        """
+        print('{:<18} {:<10} {:<20}'.format('   Title', ' Mark', 'Days left'))
+        print('=' * 42)
+        
+        for count, task in enumerate(tasks, start=1):
+            title_text = task[0]
+            mark_value = task[3]
+            day_value = task[2]
+
+            # Convert mark to (Todo) or (Done)
+            mark_text = "(Todo)" if mark_value == 0 else "(Done)"
+
+            # Convert days left to a message based on its value
+            if day_value < 0:
+                day_text = "Outdated"
+            else:
+                day_text = str(day_value) + " days left"
+
+            # Apply filter
+            if filter == 'showTodo' and mark_value != 0:
+                continue
+            elif filter == 'showDone' and mark_value != 1:
+                continue
+            
+            print(f"{count}. {title_text:<15} {mark_text:<9} {day_text:<20}")
 
     def display_task(self):
+        main = Main()
+        display = Display()
         """
         Fetches all tasks from the database, calculates the number of days remaining before the deadlines,
         sorts the tasks by the remaining days, and displays them in a formatted manner.
 
-        Author : Aj R. Dedicatoria
-        Code Created : 11-20-2023
+        Author: Aj R. Dedicatoria
+        Coded: 11-20-2023
         """
-        task = self.get_all_tasks()
-        track = DeadlineTracker(task)
+        tasks = self.get_all_tasks()
+        track = DeadlineTracker(tasks)
         track.sort_by_days_left()
-        sorted_task = track.get_task()
+        sorted_tasks = track.get_task()
 
         go_back = False
         while not go_back:
-            print('{:<17} {:<10} {:<20}'.format('   Title', ' Mark', 'Days left'))
-            print('='*42)
+            self.display_filtered_tasks(sorted_tasks)
+            choice = input("\nEnter 'showTodo', 'showDone', or 'Back': ")
 
-            for count, task in enumerate(sorted_task, start=1):
-                title_text = task[0]
-                mark_value = task[3]
-                day_value = task[2]
-
-                mark_text = "(Todo)" if mark_value == 0 else "(Done)"
-                day_text = "Outdated" if day_value < 0 else f"{day_value} days left"
-
-                print(f"{count}.{title_text:<15} {mark_text:<9} {day_text:<20}")
-
-            choice = input("\nEnter 'back' if you want to go back: ")
             if choice.upper() == 'BACK':
                 go_back = True
-                clear_screen()
+            elif choice.upper() == "SHOWTODO":
+                display.clear_screen()
+                main.print_header()
+                self.display_filtered_tasks(sorted_tasks, filter='showTodo')
+                input("\nPress Enter to go back...")
+                display.clear_screen()
+                main.print_header()
+            elif choice.upper() == "SHOWDONE":
+                display.clear_screen()
+                main.print_header()
+                self.display_filtered_tasks(sorted_tasks, filter='showDone')
+                input("\nPress Enter ...")
+                display.clear_screen()
+                main.print_header()
+            else:
+                display.clear_screen()
+                main.print_header()
+                print("\n\t      Invalid choice.")
+                time.sleep(2)
+                display.clear_screen()
+                main.print_header()
 
-        return '\n\n\t Back to the main Menu'
-
+        display.clear_screen()
+        main.print_header()
+        return '\n\n\t Back to the main Menu'   
     def mark_task(self):
         # TODO: Code to mark the task from the database / edit 🔨
 
@@ -240,7 +289,7 @@ class Options:
 
     def default(self):
         return 'Not in the options. Please try again!'
-
+    
 
 
 
