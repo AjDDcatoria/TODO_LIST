@@ -45,13 +45,6 @@ class Main:
             status_icon = Main.get_battery_status_icon(battery_percent)
             print(f"{current_time}\t\t\t  📶 {status_icon}")
 
-            print('='*14,
-                TextStyle.BOLD +
-                TextColor.MAGENTA + "  TODO LIST  " +
-                TextColor.RESET +
-                TextStyle.RESET +
-                "="*14
-            )
 
     @staticmethod
     def get_battery_status_icon(battery_percent):
@@ -71,9 +64,6 @@ class Main:
 class Menu:
     @staticmethod
     def print_menu():
-        display = Display()
-        display.clear_screen()
-        Main.print_header()
         print("\n" + TextColor.YELLOW, "  1" + TextColor.RESET + ".Add task")
         print(TextColor.YELLOW, "  2" + TextColor.RESET + ".Remove task")
         print(TextColor.YELLOW, "  3" + TextColor.RESET + ".Display task")
