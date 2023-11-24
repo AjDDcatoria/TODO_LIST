@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 from deadline import DeadlineTracker
-from ui import Main,Display
+from ui import Main,Display,TextColor,TextStyle
 
 
 current_date = datetime.now().date()
@@ -29,7 +29,7 @@ class Connector: # DataBase Connector translated from java
                 password="",
                 database="test"
             )
-            print("Connected to the database!")
+            # print("Connected to the database!")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
 
@@ -178,7 +178,17 @@ class Options:
         Author : AJ R. Dedicatoria
         Coded: 11-23-2023
         """
-        print('{:<18} {:<10} {:<20}'.format('   Title', ' Mark', 'Days left'))
+        Display.clear_screen()
+        Main.print_header()
+        self.notif()
+        print('='*14,
+            TextStyle.BOLD +
+            TextColor.MAGENTA + "  TODO LIST  " +
+            TextColor.RESET +
+            TextStyle.RESET +
+            "="*14
+        )
+        print(TextStyle.BOLD,TextColor.YELLOW,'{:<16} {:<10} {:<20}'.format('   Title', ' Mark', 'Deadline'),TextStyle.RESET,TextColor.RESET)
         print('=' * 42)
         
         for count, task in enumerate(tasks, start=1):
@@ -187,11 +197,11 @@ class Options:
             day_value = task[2]
 
             # Convert mark to (Todo) or (Done)
-            mark_text = "(Todo)" if mark_value == 0 else "(Done)"
+            mark_text = "("+TextColor.YELLOW + "Todo" + TextColor.RESET+ ")" if mark_value == 0 else "("+ TextColor.GREEN+ "Done" + TextColor.RESET + ")"
 
             # Convert days left to a message based on its value
             if day_value < 0:
-                day_text = "Outdated"
+                day_text = TextColor.RED+"Missing"+TextColor.RESET
             else:
                 day_text = str(day_value) + " days left"
 
@@ -200,8 +210,8 @@ class Options:
                 continue
             elif filter == 'showDone' and mark_value != 1:
                 continue
-            
-            print(f"{count}. {title_text:<15} {mark_text:<9} {day_text:<20}")
+
+            print(f"{count}. {title_text:<15} {mark_text:<18} {day_text:<20}")
 
     def display_task(self):
         main = Main()
@@ -228,6 +238,13 @@ class Options:
             elif choice.upper() == "SHOWTODO":
                 display.clear_screen()
                 main.print_header()
+                print('='*14,
+                TextStyle.BOLD +
+                TextColor.MAGENTA + "  TODO LIST  " +
+                TextColor.RESET +
+                TextStyle.RESET +
+                "="*14
+                )
                 self.display_filtered_tasks(sorted_tasks, filter='showTodo')
                 input("\nPress Enter to go back...")
                 display.clear_screen()
@@ -235,6 +252,13 @@ class Options:
             elif choice.upper() == "SHOWDONE":
                 display.clear_screen()
                 main.print_header()
+                print('='*14,
+                TextStyle.BOLD +
+                TextColor.MAGENTA + "  TODO LIST  " +
+                TextColor.RESET +
+                TextStyle.RESET +
+                "="*14
+                )
                 self.display_filtered_tasks(sorted_tasks, filter='showDone')
                 input("\nPress Enter ...")
                 display.clear_screen()
@@ -243,7 +267,7 @@ class Options:
                 display.clear_screen()
                 main.print_header()
                 print("\n\t      Invalid choice.")
-                time.sleep(2)
+                input("\n\t      Press Enter...")
                 display.clear_screen()
                 main.print_header()
 
@@ -285,10 +309,25 @@ class Options:
 
             Then update the selected task in the database.
         """
+        print(f"\t{'Update task'}")
         return 'updateTask'
 
     def default(self):
         return 'Not in the options. Please try again!'
+    
+    def notif(self):
+        tasks = self.get_all_tasks()
+        track = DeadlineTracker(tasks)
+        track.sort_by_days_left()
+        sorted_tasks = track.get_task()
+        notif_task = None
+
+        for task in sorted_tasks:
+            if task[2] > 0 and task[2] <= 5 and task[3] == 0:
+                notif_task = task[0]  # Return the title
+                print(f"📅 {TextColor.RED}{notif_task}{TextColor.RESET} Upcoming Deadline!!!! ")
+                break
+
     
 
 
