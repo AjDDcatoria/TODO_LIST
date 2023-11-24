@@ -200,6 +200,8 @@ class Options:
             # Convert days left to a message based on its value
             if day_value < 0:
                 day_text = TextColor.RED+"Missing"+TextColor.RESET
+            elif day_value == 0:
+                day_text = TextColor.GREEN+"Missing"+TextColor.RESET
             else:
                 day_text = str(day_value) + " days left"
 
@@ -312,6 +314,7 @@ class Options:
 
         try:
             task_list = self.get_all_tasks()
+            # Print all task
             for count, task_data in enumerate(task_list, start=1):
                 print(f"{'':<2}{count}.{task_data[0]}")
 
@@ -338,7 +341,7 @@ class Options:
                     elif task_value == 2:
                         edited_value = str(input('Enter new Deadline (MM-DD-YY): '))
                     elif task_value == 3:
-                        mark_input = input('Enter new Mark ("done" for Done, "todo" for Todo): ')
+                        mark_input = input('Enter new Mark("done" or "Todo"): ')
 
                         # Convert user input to mark value
                         edited_value = 1 if mark_input.lower() == "done" else 0
