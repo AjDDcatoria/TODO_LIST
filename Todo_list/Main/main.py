@@ -1,15 +1,25 @@
-import time
 from option import Options
-from ui import Display,Menu
+from ui import Display,Menu,TextColor,TextStyle,Main
 
 display = Display()
 menu = Menu()
+
 class MainProcessor:
     @staticmethod
     def main():
+        display.clear_screen()
         options = Options()
         exit_flag = False
         while not exit_flag:
+            Main.print_header()
+            options.notif()
+            print('='*14,
+                TextStyle.BOLD +
+                TextColor.MAGENTA + "  TODO LIST  " +
+                TextColor.RESET +
+                TextStyle.RESET +
+                "="*14
+            )
             menu.print_menu()
             choice = input("\nEnter your choice ➜ :")
             switch_choice = {
@@ -28,7 +38,7 @@ class MainProcessor:
                 selected_option = switch_choice.get(choice, options.default)
                 options_result = selected_option()
                 Display.update_text(options_result)
-                time.sleep(2)
+                input("\n\tPress Enter ...")
                 Display.clear_screen()
 
 
