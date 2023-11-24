@@ -7,14 +7,14 @@
     data base we used mysql (XAMPP)
 """
 import mysql.connector
-import time
+import sqlite3
 from datetime import datetime
 
 from deadline import DeadlineTracker
 from ui import Main,Display,TextColor,TextStyle
 
-
 current_date = datetime.now().date()
+
 
 class Connector: # DataBase Connector translated from java
     def __init__(self):
@@ -32,7 +32,6 @@ class Connector: # DataBase Connector translated from java
             # print("Connected to the database!")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
-
 
 class Options:
     def __init__(self):
@@ -166,7 +165,6 @@ class Options:
         print('\t- Remove Tasks -\n')
         return '\tTask Remove ✔️'
 
-
     def display_filtered_tasks(self, tasks, filter=None):
         """
         Displays tasks based on the specified filter.
@@ -273,7 +271,8 @@ class Options:
 
         display.clear_screen()
         main.print_header()
-        return '\n\n\t Back to the main Menu'   
+        return '\n\n\t Back to the main Menu'  
+     
     def mark_task(self):
         # TODO: Code to mark the task from the database / edit 🔨
 
@@ -309,9 +308,65 @@ class Options:
 
             Then update the selected task in the database.
         """
-        print(f"\t{'Update task'}")
-        return 'updateTask'
+        print(f"\t\t{'Update task'} \n{'=' * 42}\n")
 
+        try:
+            task_list = self.get_all_tasks()
+            for count, task_data in enumerate(task_list, start=1):
+                print(f"{'':<2}{count}.{task_data[0]}")
+
+            task_choice = int(input('\nEnter your Choice :')) - 1
+            if task_choice > len(task_list) or task_choice < 0:
+                Display.clear_lines(len(task_list) + 3)
+                print(f'\n\tNumber {task_choice} not found!!!')
+            else:
+                Display.clear_lines(len(task_list) + 3)
+                print(f"\n{'':<2}{'1.Title'}\n{'':<2}{'2.Description'}\n{'':<2}{'3.Deadline'}\n{'':<2}{'4.Mark'}\n")
+
+                task_value = int(input('Enter your choice :')) - 1
+                edited_value = None
+
+                if task_value > 3:
+                    print("\n\tSomething went wrong")
+                else:
+                    cursor = self.connector.con.cursor()
+                    task_as_ID = task_list[task_choice][0]
+                    if task_value == 0:
+                        edited_value = str(input('Enter new Title: '))
+                    elif task_value == 1:
+                        edited_value = str(input('Enter new Description: '))
+                    elif task_value == 2:
+                        edited_value = str(input('Enter new Deadline (MM-DD-YY): '))
+                    elif task_value == 3:
+                        mark_input = input('Enter new Mark ("done" for Done, "todo" for Todo): ')
+
+                        # Convert user input to mark value
+                        edited_value = 1 if mark_input.lower() == "done" else 0
+
+                        try:
+                            # Update the selected task in the database
+                            query = f"UPDATE todo_test2 SET {['title', 'description', 'deadline', 'mark'][task_value]} = %s WHERE title = %s"
+                            cursor.execute(query, (edited_value, task_as_ID))
+                            self.connector.con.commit()
+                            print('\nTask Updated successfully!!!')
+                        except mysql.connector.Error as e:
+                            print(f"Error updating task: {e}")
+
+        except ValueError:
+            Display.clear_screen()
+            Main.print_header()
+            self.notif()
+            print('=' * 14,
+                TextStyle.BOLD +
+                TextColor.MAGENTA + "  TODO LIST  " +
+                TextColor.RESET +
+                TextStyle.RESET +
+                "=" * 14
+                )
+            print(f"\t\t{'Update task'} \n{'=' * 42}\n")
+            print('\t\n\nPlease Enter a Number ...\n')
+        return ''
+    
     def default(self):
         return 'Not in the options. Please try again!'
     
@@ -327,9 +382,3 @@ class Options:
                 notif_task = task[0]  # Return the title
                 print(f"📅 {TextColor.RED}{notif_task}{TextColor.RESET} Upcoming Deadline!!!! ")
                 break
-
-    
-
-
-
-
