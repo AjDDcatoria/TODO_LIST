@@ -173,6 +173,9 @@ class Options:
 
         Returns:
             str: Formatted text indicating the remaining days.
+
+        Author : Aj R. Dedicatoria
+        Coded : 11-25-2023
         """
         if deadline_str == '0':
             return "Special case for 0"  # Handle it as needed
@@ -234,8 +237,6 @@ class Options:
 
 
     def display_task(self):
-        main = Main()
-        display = Display()
         """
         Fetches all tasks from the database, calculates the number of days remaining before the deadlines,
         sorts the tasks by the remaining days, and displays them in a formatted manner.
@@ -256,8 +257,8 @@ class Options:
             if choice.upper() == 'BACK':
                 go_back = True
             elif choice.upper() == "SHOWTODO":
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
                 print('='*14,
                 TextStyle.BOLD +
                 TextColor.MAGENTA + "  TODO LIST  " +
@@ -267,11 +268,11 @@ class Options:
                 )
                 self.display_filtered_tasks(sorted_tasks, filter='showTodo')
                 input("\nPress Enter to go back...")
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
             elif choice.upper() == "SHOWDONE":
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
                 print('='*14,
                 TextStyle.BOLD +
                 TextColor.MAGENTA + "  TODO LIST  " +
@@ -281,18 +282,18 @@ class Options:
                 )
                 self.display_filtered_tasks(sorted_tasks, filter='showDone')
                 input("\nPress Enter ...")
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
             else:
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
                 print("\n\t      Invalid choice.")
                 input("\n\t      Press Enter...")
-                display.clear_screen()
-                main.print_header()
+                Display.clear_screen()
+                Main.print_header()
 
-        display.clear_screen()
-        main.print_header()
+        Display.clear_screen()
+        Main.print_header()
         return '\n\n\t Back to the main Menu'  
      
     def mark_task(self):
