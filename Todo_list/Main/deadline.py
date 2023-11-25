@@ -4,15 +4,17 @@ class DeadlineTracker:
         self.task = task
 
     def calculate_days_left(self):
-        """
-        Calculate the days left for each task's deadline and update the array.
-        """
-        for t in self.task:
-            deadline_str = t[2]
-            deadline = datetime.strptime(deadline_str, "%m-%d-%Y").date()
-            current_date = datetime.now().date()
-            days_left = (deadline - current_date).days
-            t[2] = days_left
+        for task in self.task:
+            deadline_str = task[2]
+            if deadline_str == '0':
+                task.append(-1)  # or some other value indicating an invalid date
+            else:
+                try:
+                    deadline = datetime.strptime(deadline_str, "%m-%d-%Y").date()
+                    days_left = (deadline - datetime.now().date()).days
+                    task.append(days_left)
+                except ValueError:
+                    task.append(-1) 
     
     def merge_sort(self, arr):
         if len(arr) > 1:
