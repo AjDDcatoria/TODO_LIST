@@ -1,5 +1,5 @@
 """ #! IMPORTANT 
-    To connect data base need to install 
+    To connect database need to install 
     pip install mysql-connector-python  👈 this
 
     to install open terminal then type 👆
@@ -7,7 +7,7 @@
     data base we used mysql (XAMPP)
 """
 import mysql.connector
-from datetime import datetime,timedelta
+from datetime import datetime
 
 from deadline import DeadlineTracker
 from ui import Main,Display,TextColor,TextStyle
@@ -118,7 +118,7 @@ class Options:
 
         retrive data from 2d array?
 
-        example: # Database table
+        !example: # Database table
 
            ==================================================
              title    |  description |  deadlines   |  mark
@@ -153,16 +153,59 @@ class Options:
         finally:
             cursor.close()
 
-    def remove_task(self):
-        # TODO: Code to remove the task from the database 🔨
+    def get_task_title_by_index(self, task_index):
+        """Get the task_id based on the task_index."""
 
-        """ #? IDEA for building this function
-            You can use get_all_task() function to display the task
-            and delete by user input
-            You can decide on the specific implementation details.
-        """
-        print('\t- Remove Tasks -\n')
-        return '\tTask Remove ✔️'
+        all_task = self.get_all_tasks()
+        return all_task[task_index][0]
+
+    def remove_task(self):
+        """Remove a task from the user interface."""
+        # Display all tasks
+        all_tasks = self.get_all_tasks()
+        if not all_tasks:
+            print("No tasks to remove.")
+            return
+
+        print('\t     - Remove Tasks -\n')
+
+        for idx, task in enumerate(all_tasks, start=1):
+            print(f"{idx}. Title: {task[0]}")
+
+        # Get user input for task to remove
+        try:
+            task_index = int(input("\nEnter the number of the task to remove: ")) - 1
+            if 0 <= task_index < len(all_tasks):
+                # Assuming delete_task is a method to delete a task by its index
+                self.remove_task_from_database(task_index)
+                # print('\tTask Removed ✔️')
+            else:
+                print("Invalid input. Please enter a valid task number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+        # You may want to update this return statement based on your requirements
+        return ''
+    
+    def remove_task_from_database(self, task_index):
+        """Remove a task from the database."""
+        # Assuming 'task_id' is the unique identifier in your table
+        query = "DELETE FROM todo_test4 WHERE title = %s" 
+
+        # Get the task_id to be removed based on the task_index
+        task_id = self.get_task_title_by_index(task_index)  # You need to implement this method
+
+        cursor = self.connector.con.cursor()
+        if task_id is not None:
+            try:
+                cursor.execute(query, (task_id,))
+                self.connector.con.commit()
+                print('\tTask Removed from Database ✔️')
+            except Exception as e:
+                print(f"Error removing task from database: {e}")
+        else:
+            print("Invalid task index.")
+
     
     def remaining_days_text(self, deadline_str):
         """
@@ -297,6 +340,15 @@ class Options:
         return '\n\n\t Back to the main Menu'  
      
     def mark_task(self):
+        """
+            Display sorted task then print if mark is done
+            Get user input for task choice,
+
+            Get task ID and mark it Done
+
+            Author : AJ R. Dedicatoria
+            Coded : 11-26-2023
+        """
         sorted_tasks = self.get_all_tasks()
 
         print(f"{'':<17}{TextColor.YELLOW+'Mark task'+TextColor.RESET}\n{'='*42}\n")
@@ -315,7 +367,6 @@ class Options:
                 self.edit_task(True, task_as_ID, 3)
             else:
                 Display.clear_lines(1)
-                print(todo_task)
                 print(f"{task_choice + 1} not found!!!")
 
         except ValueError:
@@ -325,8 +376,6 @@ class Options:
 
     def update_task(self):
         """
-            Update tasks in the TODO list.
-
             Displays a list of tasks and allows the user to choose a 
             task to update.
             
@@ -349,7 +398,7 @@ class Options:
             task_choice = int(input('\nEnter your Choice :')) - 1
             if task_choice > len(task_list) or task_choice < 0:
                 Display.clear_lines(len(task_list) + 3)
-                print(f'\n\tNumber {task_choice} not found!!!')
+                print(f'\n\tNumber {task_choice + 1} not found!!!')
             else:
                 Display.clear_lines(len(task_list) + 3)
                 print(f"\n{'':<2}{'1.Title'}\n{'':<2}{'2.Description'}\n{'':<2}{'3.Deadline'}\n{'':<2}{'4.Mark'}\n")
@@ -423,7 +472,6 @@ class Options:
         return 'Not in the options. Please try again!'
     
     def notif(self):
-
         """
             Check and notify upcoming deadlines within a specific time range.
 
@@ -477,4 +525,5 @@ class Options:
             print('\n    Task Updated successfully!!!')
         except mysql.connector.Error as e:
             print(f"Error updating task: {e}")
+
 
