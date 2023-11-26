@@ -1,13 +1,11 @@
 from option import Options
 from ui import Display,Menu,TextColor,TextStyle,Main
 
-display = Display()
-menu = Menu()
 
 class MainProcessor:
     @staticmethod
     def main():
-        display.clear_screen()
+        Display.clear_screen()
         options = Options()
         exit_flag = False
         while not exit_flag:
@@ -20,7 +18,7 @@ class MainProcessor:
                 TextStyle.RESET +
                 "="*14
             )
-            menu.print_menu()
+            Menu.print_menu()
             choice = input("\nEnter your choice ➜ :")
             switch_choice = {
                 "1": options.add_task,
@@ -29,7 +27,7 @@ class MainProcessor:
                 "4": options.mark_task,
                 "5": options.update_task
             }
-            display.clear_lines(9)
+            Display.clear_lines(9)
             
             if choice == "6":
                 Display.clear_screen()
