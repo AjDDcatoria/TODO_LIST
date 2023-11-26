@@ -496,11 +496,12 @@ class Options:
         for task in sorted_tasks:
             try:
                 deadline_date = datetime.strptime(task[2], "%m-%d-%Y")  # Parse date string to datetime object
-                days_left = (deadline_date - datetime.now()).days  # Calculate days left until the deadline
+                days_left = (deadline_date - datetime.now()).days # Calculate days left until the deadline
             except ValueError:
                 print(f"Error: Unable to convert '{task[2]}' to a valid date for task '{task[0]}'. Skipping task.")
                 continue
-
+            
+            days_left += 1
             if (days_left == -1 or days_left == 0) and task[3] == 0:
                 notif_task = task[0]  # Return the title
                 print(f"📅 {TextColor.RED}{notif_task}{TextColor.RESET} Upcoming Deadline: Today")
@@ -525,5 +526,3 @@ class Options:
             print('\n    Task Updated successfully!!!')
         except mysql.connector.Error as e:
             print(f"Error updating task: {e}")
-
-
