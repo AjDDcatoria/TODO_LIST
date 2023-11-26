@@ -297,18 +297,30 @@ class Options:
         return '\n\n\t Back to the main Menu'  
      
     def mark_task(self):
-        # TODO: Code to mark the task from the database / edit 🔨
         sorted_tasks = self.get_all_tasks()
-        """ #? IDEA for building this function
-            The mark value in database is BOOLEAN
-            0 = False == TODO
-            1 = True == DONE
 
-            You can use the get_all_task() function to display the task
-            and then ask the user for input on which task they want to mark.
-            You can decide on the specific implementation details.
-        """
-        self.display_filtered_tasks(sorted_tasks,'showTodo')
+        print(f"{'':<15}{'Mark task as Done'}\n{'='*42}\n")
+
+        todo_task = [task for task in sorted_tasks if task[3] == 0]
+
+        for count, tasks in enumerate(todo_task, start=1):
+            print(f"{'':<3}{count}. {tasks[0]}")
+
+        try:
+            task_choice = int(input('Enter your choice: ')) - 1
+            Display.clear_lines(1)
+            if 0 <= task_choice < len(todo_task):
+                Display.clear_lines(1)
+                task_as_ID = todo_task[task_choice][0]
+                self.edit_task(True, task_as_ID, 3)
+            else:
+                Display.clear_lines(1)
+                print(todo_task)
+                print(f"{task_choice + 1} not found!!!")
+
+        except ValueError:
+            print('Please enter a valid task number...')
+
         return ''
 
     def update_task(self):
