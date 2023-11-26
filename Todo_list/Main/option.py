@@ -299,7 +299,7 @@ class Options:
     def mark_task(self):
         sorted_tasks = self.get_all_tasks()
 
-        print(f"{'':<15}{'Mark task as Done'}\n{'='*42}\n")
+        print(f"{'':<17}{TextColor.YELLOW+'Mark task'+TextColor.RESET}\n{'='*42}\n")
 
         todo_task = [task for task in sorted_tasks if task[3] == 0]
 
@@ -307,7 +307,7 @@ class Options:
             print(f"{'':<3}{count}. {tasks[0]}")
 
         try:
-            task_choice = int(input('Enter your choice: ')) - 1
+            task_choice = int(input('\nEnter your choice: ')) - 1
             Display.clear_lines(1)
             if 0 <= task_choice < len(todo_task):
                 Display.clear_lines(1)
@@ -338,7 +338,7 @@ class Options:
             Author: AJ R. Dedicatoria
             Coded : 11-25-2023
         """
-        print(f"\t\t{'Update task'} \n{'=' * 42}\n")
+        print(f"\t\t{TextColor.YELLOW+'Update task'+TextColor.RESET} \n{'=' * 42}\n")
 
         try:
             task_list = self.get_all_tasks()
@@ -453,7 +453,7 @@ class Options:
                 print(f"Error: Unable to convert '{task[2]}' to a valid date for task '{task[0]}'. Skipping task.")
                 continue
 
-            if days_left == -1 or days_left == 0 and task[3] == 0:
+            if (days_left == -1 or days_left == 0) and task[3] == 0:
                 notif_task = task[0]  # Return the title
                 print(f"📅 {TextColor.RED}{notif_task}{TextColor.RESET} Upcoming Deadline: Today")
                 break
